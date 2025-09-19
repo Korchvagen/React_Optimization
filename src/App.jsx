@@ -1,12 +1,13 @@
-import List from './components/List/List';
-import ListItem from './components/ListItem/ListItem';
-import ListItemText from './components/ListItemText/ListItemText';
-import { Stack, ListItemAvatar, Avatar, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import ProductsList from './components/ProductsList/ProductsList';
+import Filters from './components/Filters/Filters';
+import { Container } from '@mui/material';
 import './App.css'
-import { useEffect, useState, Profiler } from 'react';
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [filters, setFilters] = useState([]);
+  const [checked, setChecked] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,44 +31,42 @@ function App() {
         ...data.products,
         ...data.products
       ]);
+
+      setFilters(() => {
+        const categories = [];
+
+        data.products.forEach(item => {
+          if (!categories.includes(item.category)) {
+            categories.push(item.category);
+          }
+        });
+
+        return categories;
+      });
     }
 
     fetchData();
+
   }, []);
 
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
   return (
-    <>
-      <Profiler id="List" onRender={(id, phase, actualDuration, baseDuration) => console.log(id, phase, actualDuration, baseDuration)}>
-        <List>
-          {products.map((item, index) =>
-            <ListItem
-              key={`${index}-${item.id}-${item.title}`}
-              divider={true}>
-              <ListItemAvatar
-                sx={{
-                  width: 200,
-                  height: 200,
-                  paddingRight: 2.5
-                }}>
-                <Avatar
-                  sx={{
-                    width: "100%",
-                    height: "100%"
-                  }}
-                  alt={`Image of ${item.title}`}
-                  src={item.images[0]} />
-              </ListItemAvatar>
-              <Stack>
-                <ListItemText primary={item.title} />
-                <ListItemText secondary={item.description} />
-                <ListItemText>{'$' + item.price}</ListItemText>
-                <Typography color='textPrimary' variant='subtitle1'>{item.category}</Typography>
-              </Stack>
-            </ListItem>
-          )}
-        </List>
-      </Profiler>
-    </>
+    <Container>
+      <Filters filters={filters} checked={checked} handleToggle={handleToggle}/>
+      <ProductsList products={products} />
+    </Container>
   )
 }
 
