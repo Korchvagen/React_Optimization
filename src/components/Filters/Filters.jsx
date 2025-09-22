@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Stack, Collapse, Button, List, ListItem, ListItemText, ListItemButton, ListItemIcon, Checkbox } from "@mui/material";
+import { Stack, Collapse, Button, List } from "@mui/material";
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import FilterItem from '../FilterItem/FilterItem';
 
 function Filters({ filters, checked, handleToggle }) {
+  console.log('рендер фильтра');
   const [open, setOpen] = useState(false);
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
+  const handleClick = () => setOpen(!open);
 
   return (
     <Stack>
@@ -26,20 +26,12 @@ function Filters({ filters, checked, handleToggle }) {
         <List component='div' disablePadding>
           {
             filters.map((item, index) =>
-              <ListItem
+              <FilterItem
                 key={`${index}-${item}`}
-                disablePadding
-              >
-                <ListItemButton role={undefined} onClick={handleToggle(item)} dense>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={checked.includes(item)}
-                    />
-                  </ListItemIcon>
-                  <ListItemText primary={item} />
-                </ListItemButton>
-              </ListItem>
+                item={item}
+                isChecked={checked.includes(item)}
+                handleToggle={handleToggle}
+              />
             )
           }
         </List>

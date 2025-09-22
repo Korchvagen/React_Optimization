@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ProductsList from './components/ProductsList/ProductsList';
 import Filters from './components/Filters/Filters';
 import { Container } from '@mui/material';
@@ -10,7 +10,7 @@ function App() {
   const [checked, setChecked] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       const response = await fetch('https://dummyjson.com/products?limit=100');
 
       if (!response.ok) {
@@ -19,53 +19,34 @@ function App() {
 
       const data = await response.json();
 
-      setProducts(() => [
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products,
-        ...data.products
-      ]);
+      setProducts(Array(10).fill(null).flatMap(() => [...data.products]));
 
-      setFilters(() => {
-        const categories = [];
-
-        data.products.forEach(item => {
-          if (!categories.includes(item.category)) {
-            categories.push(item.category);
-          }
-        });
-
-        return categories;
-      });
-    }
-
-    fetchData();
-
+      setFilters([...new Set(data.products.map(item => item.category))]);
+    })();
   }, []);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+  const handleToggle = useCallback((value) => {
+    setChecked((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter(item => item !== value);
+      }
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+      return [...prev, value];
+    });
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    if (checked.length === 0) {
+      return products;
     }
 
-    setChecked(newChecked);
-  };
+    return products.filter(item => checked.includes(item.category));
+  }, [products, checked]);
 
   return (
     <Container>
-      <Filters filters={filters} checked={checked} handleToggle={handleToggle}/>
-      <ProductsList products={products} />
+      <Filters filters={filters} checked={checked} handleToggle={handleToggle} />
+      <ProductsList products={filteredProducts} />
     </Container>
   )
 }

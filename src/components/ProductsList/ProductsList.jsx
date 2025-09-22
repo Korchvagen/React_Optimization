@@ -1,8 +1,9 @@
-import React from 'react';
 import { List } from '@mui/material';
 import ListItem from '../ListItem/ListItem';
 
-const ProductsList = React.memo(function ProductsList({products}) {
+function ProductsList({products}) {
+  console.log("Рендер списка...");
+
   return (
     <List
       sx={{
@@ -14,6 +15,6 @@ const ProductsList = React.memo(function ProductsList({products}) {
       )}
     </List>
   );
-});
+}
 
 export default ProductsList;

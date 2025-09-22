@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { ListItem as MaterialListItem, Stack, ListItemAvatar, ListItemText, Avatar, Typography } from '@mui/material';
 
-function ListItem({product, index}) {
+const ListItem = memo(function ListItem({product, index}) {
+  console.log("Рендер элемента списка...");
+
   return (
-    <MaterialListItem
-      key={`${index}-${product.id}-${product.title}`}
-      divider={true}>
+    <MaterialListItem divider={true}>
       <ListItemAvatar
         sx={{
           width: 200,
@@ -27,6 +28,6 @@ function ListItem({product, index}) {
       </Stack>
     </MaterialListItem>
   );
-}
+});
 
 export default ListItem;
