@@ -1,19 +1,17 @@
-import { List } from '@mui/material';
+import { Virtuoso } from 'react-virtuoso';
 import ListItem from '../ListItem/ListItem';
 
-function ProductsList({products}) {
+function ProductsList({ products }) {
   console.log("Рендер списка...");
 
   return (
-    <List
-      sx={{
-        width: 900
-      }}
-    >
-      {products.map((item, index) =>
-        <ListItem key={`${index}-${item.id}-${item.title}`} product={item} index={index}/>
+    <Virtuoso
+      style={{ width: 900, height: 800 }}
+      data={products}
+      itemContent={(index, item) => (
+        <ListItem key={`${index}-${item.id}-${item.title}`} product={item} index={index} />
       )}
-    </List>
+    />
   );
 }
 
